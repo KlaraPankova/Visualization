@@ -24,8 +24,6 @@ function ensureCy() {
           "target-arrow-color": "#c7c2b3",
         },
       },
-      // step-highlight overlay classes — applied/removed independently
-      // of the base styles above, never touch those directly
       { selector: "node.step-highlight", style: { "border-color": "#e07b1f", "border-width": 4 } },
       { selector: "edge.step-highlight", style: { "line-color": "#e07b1f", "target-arrow-color": "#e07b1f", width: 3 } },
     ],
@@ -49,7 +47,7 @@ function redraw() {
   }));
   cy.add([...nodeEls, ...edgeEls]);
 
-  const components = graph.getComponents(); // Map<root, [keys...]>
+  const components = graph.getComponents();
   const colorOfRoot = new Map();
   let colorIndex = 0;
   for (const root of components.keys()) {
