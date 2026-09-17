@@ -26,3 +26,58 @@ function resetGraph() {
     appState.graph = null;
     // document.getElementById("log-panel").innerHTML = "";
 }
+
+let currentSteps = null;
+
+function addEdge() {
+    if (!appState.graph) {
+        alert("Please generate a graph first.");
+        return;
+    }
+    if (currentSteps !== null) {
+        alert("Please finish the current edge addition before adding a new edge.");
+        return;
+    }
+    const from = parseInt(document.getElementById("sourceNode").value, 10);
+    const to = parseInt(document.getElementById("targetNode").value, 10);
+    if (!Number.isInteger(from) || !Number.isInteger(to)) return;
+    if (from === to) {
+        alert("Self-loops are not allowed.");
+        return;
+    }
+    currentSteps = appState.graph.addEdgeSteps(from, to);
+    setSteppingUI(true);
+    advanceStep();
+}
+
+function nextStep() {
+    advanceStep();
+}
+
+function advanceStep() {
+    const result = currentSteps.next();
+    if (result.done) {
+        currentSteps = null;
+        setSteppingUI(false);
+        redraw();
+        return;
+    }
+    const step = result.value;
+    applyStepToRender(step);
+    logMessage(step.message);
+}
+
+function setSteppingUI(isStepping){
+    document.getElementById("add-edge-btn").disabled = isStepping;
+    document.getElementById("next-step-bnt").disabled = !isStepping;
+    document.getElementById("sourceNode").disabled = isStepping;
+    document.getElementById("targetNode").disabled = isStepping;
+}
+
+function logMessage(text){
+    const panel = document.getElementById("log-panel");
+    const entry = document.createElement("div");
+    entry.textContent = text;
+    panel.appendChild(entry);
+    panel.scrollTop = panel.scrollHeight;
+}

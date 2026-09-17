@@ -74,3 +74,25 @@ function applyStepToRender(step) {
     if (edge.length) edge.addClass("step-highlight");
   }
 }
+
+function applyStepToRender(step) {
+  cy.elements(".step-highlight").removeClass("step-highlight");
+
+  step.path.forEach((key) => {
+    const node = cy.getElementById(String(key));
+    if (node.length) node.addClass("step-highlight");
+  });
+
+  if (step.highlightEdges === false) return;
+
+  for (let i = 0; i < step.path.length - 1; i++) {
+    const a = step.path[i];
+    const b = step.path[i + 1];
+
+    const forwardEdge = cy.getElementById(`e-${a}-${b}`);
+    const backwardEdge = cy.getElementById(`e-${b}-${a}`);
+
+    if (forwardEdge.length) forwardEdge.addClass("step-highlight");
+    else if (backwardEdge.length) backwardEdge.addClass("step-highlight");
+  }
+}
