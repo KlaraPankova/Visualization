@@ -63,8 +63,12 @@ function advanceStep() {
         return;
     }
     const step = result.value;
-    applyStepToRender(step);
-    logMessage(step.message);
+    if (step.redraw) {
+        redraw();
+    } else {
+        applyStepToRender(step);
+    }
+    if (step.message) logMessage(step.message);
 }
 
 function setSteppingUI(isStepping){

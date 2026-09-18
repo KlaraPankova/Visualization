@@ -73,7 +73,7 @@ class SparseGraph {
     }
 
     forwardSearch(u, z, B, path){
-        const F = new Map(z.out);
+        const F = new Map(z.outgoingEdges);
         let cycle = false;
         while(F.size > 0){
             const firstKey = F.keys().next().value;
@@ -89,7 +89,7 @@ class SparseGraph {
                 path.push(p.key);
                 p.level = z.level;
                 p.incomingEdges = [x];
-                for(const [k, edge] of p.out){
+                for(const [k, edge] of p.outgoingEdges){
                     F.set(k, edge);
                 }
             }
@@ -175,7 +175,7 @@ class SparseGraph {
             }
         }
         const x  = this.vertices[this.canonical.find(u.key)];
-        x.outgoingEdges.set({from: v.key, to: w.key}, {v, w});
+        x.outgoingEdges.set(`${u.key}->${z.key}`, {v, w});
         if(x.level === z.level){
             z.incomingEdges.push(v);
         }
