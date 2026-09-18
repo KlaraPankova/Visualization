@@ -47,24 +47,67 @@ function addEdge() {
     }
     currentSteps = appState.graph.addEdgeSteps(from, to);
     setSteppingUI(true);
-    advanceStep();
+    advanceStep(from, to);
+}
+
+function addEdgeFast() {
+  if (!appState.graph) {
+    alert("Generate a graph first.");
+    return;
+  }
+  if (currentSteps !== null) {
+    alert("Finish the current edge insertion before adding another.");
+    return;
+  }
+
+  const from = parseInt(document.getElementById("sourceNode").value, 10);
+  const to = parseInt(document.getElementById("targetNode").value, 10);
+  const n = appState.graph.vertices.length;
+
+  if (!Number.isInteger(from) || !Number.isInteger(to) || from < 0 || from >= n || to < 0 || to >= n) {
+    alert(`Nodes must be integers between 0 and ${n - 1}.`);
+    return;
+  }
+  if (from === to) {
+    alert("Self-loops aren't supported by this algorithm.");
+    return;
+  }
+
+  runToCompletion(appState.graph.addEdgeSteps(from, to), from, to);
+}
+
+
+function runToCompletion(generator, from, to) {
+  let result = generator.next();
+  while (!result.done) {
+    if (result.value.message) logMessage(result.value.message);
+    result = generator.next();
+  }
+  addEdgeToCy(from, to);
+  if(result.value === true){
+    relayoutClusters();
+  }
 }
 
 function nextStep() {
-    advanceStep();
+    const from = parseInt(document.getElementById("sourceNode").value, 10);
+    const to = parseInt(document.getElementById("targetNode").value, 10);
+    advanceStep(from, to);
 }
 
-function advanceStep() {
+function advanceStep(from, to) {
     const result = currentSteps.next();
     if (result.done) {
         currentSteps = null;
         setSteppingUI(false);
-        redraw();
+        addEdgeToCy(from, to);
+        if(result.value === true) relayoutClusters();
         return;
     }
     const step = result.value;
     if (step.redraw) {
-        redraw();
+        addEdgeToCy(from, to);
+        relayoutClusters();
     } else {
         applyStepToRender(step);
     }
@@ -73,6 +116,7 @@ function advanceStep() {
 
 function setSteppingUI(isStepping){
     document.getElementById("add-edge-btn").disabled = isStepping;
+    document.getElementById("add-edge-fast-btn").disabled = isStepping;
     document.getElementById("next-step-bnt").disabled = !isStepping;
     document.getElementById("sourceNode").disabled = isStepping;
     document.getElementById("targetNode").disabled = isStepping;

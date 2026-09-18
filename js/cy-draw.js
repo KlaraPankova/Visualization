@@ -64,7 +64,7 @@ function redraw() {
 }
 
 
-function applyStepToRender(step) {
+/*function applyStepToRender(step) {
   cy.elements(".step-highlight").removeClass("step-highlight");
 
   step.path.forEach((key) => cy.getElementById(String(key)).addClass("step-highlight"));
@@ -73,7 +73,7 @@ function applyStepToRender(step) {
     const edge = cy.getElementById(`e-${step.path[i]}-${step.path[i + 1]}`);
     if (edge.length) edge.addClass("step-highlight");
   }
-}
+}*/
 
 function applyStepToRender(step) {
   cy.elements(".step-highlight").removeClass("step-highlight");
@@ -95,4 +95,30 @@ function applyStepToRender(step) {
     if (forwardEdge.length) forwardEdge.addClass("step-highlight");
     else if (backwardEdge.length) backwardEdge.addClass("step-highlight");
   }
+}
+
+function addEdgeToCy(from, to) {
+  const id = `e-${from}-${to}`;
+  if (!cy.getElementById(id).length) {
+    cy.add({ data: { id, source: String(from), target: String(to) } });
+  }
+}
+
+function relayoutClusters() {
+  const graph = appState.graph;
+  const components = graph.getComponents();
+
+  const colorOfRoot = new Map();
+  let colorIndex = 0;
+  for (const root of components.keys()) {
+    colorOfRoot.set(root, PALETTE[colorIndex % PALETTE.length]);
+    colorIndex++;
+  }
+  for (const [root, members] of components) {
+    const color = colorOfRoot.get(root);
+    members.forEach((key) => cy.getElementById(String(key)).style("background-color", color));
+  }
+
+  const clusters = [...components.values()].filter((m) => m.length > 0);
+  cy.layout({ name: "cise", clusters, animate: false }).run();
 }

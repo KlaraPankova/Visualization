@@ -180,7 +180,7 @@ class SparseGraph {
             z.incomingEdges.push(v);
         }
         this.edges.push({from: v.key, to: w.key});
-
+        return cycle;
     }
 
 }

@@ -164,6 +164,7 @@ class DenseGraph{
         const z = this.vertices[this.canonical.find(to)];
         const v = this.vertices[from];
         const w = this.vertices[to];
+        const cycle = false;
         let marked = new Set();
         let newComponents = new Map();
         yield { path: [v.key, w.key], message: `Adding edge (${v.key}, ${w.key})` };
@@ -174,7 +175,7 @@ class DenseGraph{
                 message: "Already in the same component — no structural update needed",
                 highlightEdges: false,
             };
-            return;
+            return false;
         }
         if(u.level < z.level){
             this.edges.push({from: v.key, to: w.key});
@@ -188,6 +189,7 @@ class DenseGraph{
                 this.mark_DFS(marked, z, u, z);
                 const DFS_path = [...marked];
                 if( marked.has(z)){
+                    cycle = true;
                     yield{path: DFS_path, message: "DFS found cycle"};
                     this.edges.push({from: v.key, to: w.key});
                     newComponents = this.fixComponents(DFS_path, u, z);
@@ -204,5 +206,6 @@ class DenseGraph{
                 this.fixVariables(newComponents, fixed_vertices);
                 yield{path: fixed_vertices, message: "Variables fixed in highlighted vertices", highlightEdges: false};
             }
+            return cycle;
         }
 }
