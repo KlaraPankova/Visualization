@@ -4,9 +4,9 @@ class Union_find {
   }
 
   find(x) {
-    if (this.parent[x] !== x) {
+    /*if (this.parent[x] !== x) {
       this.parent[x] = this.find(this.parent[x]);
-    }
+    }*/
     return this.parent[x];
   }
 

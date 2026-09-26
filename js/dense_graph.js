@@ -42,6 +42,20 @@ class DenseGraph{
         return components;
     }
 
+    getVertex(key){
+        const v = this.vertices[key];
+        return{
+            key: v.key,
+            level: v.level,
+            components: this.canonical.find(v.key),
+            outgoingEdges: [...v.outgoingEdges.values()].map((e) => `${e.from.key} → ${e.to.key} (w=${e.weight})`),
+            outgoingCanonicalEdges: [...v.outgoingCanonicalEdges.values()].map((e) => `${e.from.key} → ${e.to.key}`),
+            incomingCanonicalEdges: [...v.incomingCanonicalEdges].map((p) => p.key),
+            b: Object.fromEntries(v.b),
+            c: Object.fromEntries(v.c),
+        };
+    }
+
     mark_DFS(marked, x, u, z){
         for(const [k, edge] of x.outgoingEdges){
             const j = edge.weight;

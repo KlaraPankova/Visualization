@@ -35,6 +35,17 @@ class SparseGraph {
         return components;
     }
 
+    getVertex(key){
+        const v = this.vertices[key];
+        return{
+            key: v.key,
+            level: v.level,
+            components: this.canonical.find(v.key),
+            out: [...v.outgoingEdges.values()].map((e) => `${e.from.key} → ${e.to.key}`),
+            in: v.incomingEdges.map((p) => p.key)
+        };
+    }
+
     backSearch(u, z, B, path){
         let count = 0;
         let queue = [u];

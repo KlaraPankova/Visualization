@@ -29,6 +29,10 @@ function ensureCy() {
     ],
     wheelSensitivity: 0.25,
   });
+  cy.on("tap", "node", (evt) => {
+    const key = parseInt(evt.target.id(), 10);
+    showVertexDetails(key);
+  });
   return cy;
 }
 
@@ -121,4 +125,22 @@ function relayoutClusters() {
 
   const clusters = [...components.values()].filter((m) => m.length > 0);
   cy.layout({ name: "cise", clusters, animate: false }).run();
+}
+
+function showVertexDetails(key){
+  const details = appState.graph.getVertex(key);
+  const panel = document.getElementById("vertex-details");
+  panel.innerHTML = "";
+
+  for (const [field, value] of Object.entries(details)) {
+    const line = document.createElement("div");
+    if (Array.isArray(value)) {
+      line.textContent = `${field}: [${value.join(", ")}]`;
+    } else if (typeof value === "object" && value !== null) {
+      line.textContent = `${field}: ${JSON.stringify(value)}`;
+    } else {
+      line.textContent = `${field}: ${value}`;
+    }
+    panel.appendChild(line);
+  }
 }
